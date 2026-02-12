@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace WeatherApp.Application.Interfaces
 {
-    internal interface IWeatherApiClient
-    {
-    }
+    public interface IWeatherApiClient
+{
+    Task<ExternalWeatherResponse> GetCurrentWeatherAsync(
+        string city,
+        string units);
+
+    Task<ExternalForecastResponse> GetForecastAsync(
+        string city,
+        string units);
+}
+
 }

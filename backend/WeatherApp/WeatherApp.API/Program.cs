@@ -9,6 +9,15 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IWeatherService, WeatherService>();
+builder.Services.AddScoped<IPreferenceService, PreferenceService>();
+builder.Services.AddScoped<IWeatherApiClient, OpenWeatherApiClient>();
+builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

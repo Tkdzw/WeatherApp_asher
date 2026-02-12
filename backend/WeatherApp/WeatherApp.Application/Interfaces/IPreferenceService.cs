@@ -1,6 +1,9 @@
 namespace WeatherApp.Application.Interfaces
 {
-    internal interface IPreferenceService
-    {
-    }
+   public interface IPreferenceService
+{
+    Task<PreferenceDto> GetPreferencesAsync(int userId);
+
+    Task UpdatePreferencesAsync(int userId, UpdatePreferenceRequest request);
+}
 }
