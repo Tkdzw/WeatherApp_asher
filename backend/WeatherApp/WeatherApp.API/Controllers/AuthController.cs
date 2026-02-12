@@ -1,12 +1,33 @@
 using Microsoft.AspNetCore.Mvc;
+using WeatherApp.Application.Interfaces;
+using WeatherApp.Application.DTOs;
 
-namespace WeatherApp.API.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class AuthController : ControllerBase
 {
-    public class AuthController : Controller
+    private readonly IUserService _userService;
+
+    public AuthController(IUserService userService)
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        _userService = userService;
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register(RegisterRequest request)
+    {
+        var result = await _userService.RegisterAsync(request);
+        return Ok(result);
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginRequest request)
+    {
+        var result = await _userService.LoginAsync(request);
+
+        if (result == null)
+            return Unauthorized("Invalid credentials");
+
+        return Ok(result);
     }
 }
