@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace WeatherApp.Infrastructure.Persistence
 {
-    internal class AppDbContext
+    public class AppDbContext : DbContext
     {
+        public DbSet<Location> Locations { get; set; }
+        public DbSet<WeatherSnapshot> WeatherSnapshots { get; set; }
     }
 }
