@@ -1,12 +1,37 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using WeatherApp.Application.Interfaces;
 
-namespace WeatherApp.API.Controllers
+[ApiController]
+[Authorize]
+[Route("api/[controller]")]
+public class WeatherController : ControllerBase
 {
-    public class WeatherController : Controller
+    private readonly IWeatherService _weatherService;
+
+    public WeatherController(IWeatherService weatherService)
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        _weatherService = weatherService;
+    }
+
+    [HttpGet("{locationId}")]
+    public async Task<IActionResult> GetCurrentWeather(int locationId)
+    {
+        var weather = await _weatherService.GetCurrentWeatherAsync(locationId);
+        return Ok(weather);
+    }
+
+    [HttpGet("{locationId}/forecast")]
+    public async Task<IActionResult> GetForecast(int locationId)
+    {
+        var forecast = await _weatherService.GetForecastAsync(locationId);
+        return Ok(forecast);
+    }
+
+    [HttpPost("{locationId}/sync")]
+    public async Task<IActionResult> SyncWeather(int locationId)
+    {
+        await _weatherService.SyncWeatherAsync(locationId);
+        return NoContent();
     }
 }

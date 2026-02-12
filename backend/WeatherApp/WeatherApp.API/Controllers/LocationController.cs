@@ -1,12 +1,54 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using WeatherApp.Application.Interfaces;
 
-namespace WeatherApp.API.Controllers
+[ApiController]
+[Authorize]
+[Route("api/[controller]")]
+public class LocationsController : ControllerBase
 {
-    public class LocationController : Controller
+    private readonly ILocationService _locationService;
+
+    public LocationsController(ILocationService locationService)
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        _locationService = locationService;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var locations = await _locationService.GetAllAsync();
+        return Ok(locations);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(int id)
+    {
+        var location = await _locationService.GetByIdAsync(id);
+        if (location == null)
+            return NotFound();
+
+        return Ok(location);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateLocationRequest request)
+    {
+        var location = await _locationService.CreateAsync(request);
+        return CreatedAtAction(nameof(Get), new { id = location.Id }, location);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, UpdateLocationRequest request)
+    {
+        await _locationService.UpdateAsync(id, request);
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _locationService.DeleteAsync(id);
+        return NoContent();
     }
 }
