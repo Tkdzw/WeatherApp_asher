@@ -2,18 +2,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WeatherApp.Domain.Entities;
 
-public class WeatherSnapshotConfiguration 
+public class WeatherSnapshotConfiguration
     : IEntityTypeConfiguration<WeatherSnapshot>
 {
     public void Configure(EntityTypeBuilder<WeatherSnapshot> builder)
     {
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Temperature)
-            .HasColumnType("decimal(8,2)");
+        builder.Property(x => x.Temperature);
 
         builder.Property(x => x.FeelsLike)
-            .HasColumnType("decimal(8,2)");
+            ;
 
         builder.Property(x => x.Description)
             .IsRequired()
@@ -22,8 +21,7 @@ public class WeatherSnapshotConfiguration
         builder.Property(x => x.Icon)
             .HasMaxLength(50);
 
-        builder.Property(x => x.WindSpeed)
-            .HasColumnType("decimal(8,2)");
+        builder.Property(x => x.WindSpeed);
 
         builder.Property(x => x.Timestamp)
             .IsRequired();

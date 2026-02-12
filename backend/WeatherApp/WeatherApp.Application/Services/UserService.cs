@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using BCrypt.Net;
 using WeatherApp.Application.DTOs;
+using WeatherApp.Application.DTOs.Auth;
+using WeatherApp.Application.DTOs.Users;
 using WeatherApp.Application.Interfaces;
 using WeatherApp.Domain.Entities;
 using WeatherApp.Infrastructure.Persistence;
@@ -15,7 +18,7 @@ public class UserService : IUserService
         _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public async Task<AuthResponseDto> RegisterAsync(RegisterRequest request)
+    public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
     {
         if (await _context.Users.AnyAsync(x => x.Email == request.Email))
             throw new Exception("Email already exists");
@@ -112,5 +115,17 @@ public class UserService : IUserService
                 Email = x.Email
             })
             .FirstOrDefaultAsync();
+    }
+
+ 
+
+    Task<UserDto?> IUserService.GetByIdAsync(int userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task RemoveFavoriteAsync(int userId, int locationId)
+    {
+        throw new NotImplementedException();
     }
 }

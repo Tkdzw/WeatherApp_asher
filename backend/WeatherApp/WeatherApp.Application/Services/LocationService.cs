@@ -67,4 +67,9 @@ public class LocationService : ILocationService
         _context.Locations.Remove(location);
         await _context.SaveChangesAsync();
     }
+
+    public Task<LocationDto?> GetByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
 }

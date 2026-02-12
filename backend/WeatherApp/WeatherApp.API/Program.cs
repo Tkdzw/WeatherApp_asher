@@ -6,23 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ILocationService, LocationService>();
-builder.Services.AddScoped<IWeatherService, WeatherService>();
-builder.Services.AddScoped<IPreferenceService, PreferenceService>();
-//builder.Services.AddScoped<IWeatherApiClient, OpenWeatherApiClient>();
-//builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-
-
-
 //MySql Configuration
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
@@ -31,6 +14,26 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             builder.Configuration.GetConnectionString("DefaultConnection")
         )
     ));
+
+
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<ILocationService, LocationService>();
+builder.Services.AddTransient<IWeatherService, WeatherService>();
+builder.Services.AddTransient<IPreferenceService, PreferenceService>();
+//builder.Services.AddScoped<IWeatherApiClient, OpenWeatherApiClient>();
+//builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+
+
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+
 
 
 // Configure the HTTP request pipeline.
