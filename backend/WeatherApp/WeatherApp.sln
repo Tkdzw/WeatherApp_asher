@@ -8,6 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApp.Domain", "WeatherApp.Domain\WeatherApp.Domain.csproj", "{E7BE946A-0F54-4009-B94F-F51A353F9205}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApp.Application", "WeatherApp.Application\WeatherApp.Application.csproj", "{EBCC1883-B2AF-4A52-89DC-0A46C7B55698}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E7BE946A-0F54-4009-B94F-F51A353F9205} = {E7BE946A-0F54-4009-B94F-F51A353F9205}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApp.Infrastructure", "WeatherApp.Infrastructure\WeatherApp.Infrastructure.csproj", "{6EC8BBF0-C918-4750-A435-A6B897601DAA}"
 EndProject

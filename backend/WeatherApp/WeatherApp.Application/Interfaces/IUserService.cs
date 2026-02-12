@@ -1,8 +1,11 @@
+using WeatherApp.Application.DTOs.Auth;
+using WeatherApp.Application.DTOs.Users;
+
 namespace WeatherApp.Application.Interfaces
 {
    public interface IUserService
 {
-    Task<AuthResponseDto> RegisterAsync(RegisterRequest request);
+    Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request);
     Task<AuthResponseDto?> LoginAsync(LoginRequest request);
 
     Task<UserDto?> GetByIdAsync(int userId);

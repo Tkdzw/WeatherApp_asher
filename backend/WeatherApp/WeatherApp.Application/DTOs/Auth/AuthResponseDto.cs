@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 public class AuthResponseDto
 {
     public int UserId { get; set; }

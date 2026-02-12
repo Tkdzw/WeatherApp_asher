@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using WeatherApp.Application.DTOs.Auth;
 using WeatherApp.Application.Interfaces;
-using WeatherApp.Application.DTOs;
+
 
 [ApiController]
 [Route("api/[controller]")]
@@ -14,7 +15,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request)
+    public async Task<IActionResult> Register(RegisterRequestDto request)
     {
         var result = await _userService.RegisterAsync(request);
         return Ok(result);
