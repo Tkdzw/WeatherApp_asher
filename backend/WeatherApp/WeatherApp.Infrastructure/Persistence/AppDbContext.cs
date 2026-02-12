@@ -1,14 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using WeatherApp.Domain.Entities;
 
-namespace WeatherApp.Infrastructure.Persistence
+namespace WeatherApp.Infrastructure.Persistence;
+
+public class AppDbContext : DbContext
 {
-    public class AppDbContext : DbContext
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
     {
-        public DbSet<Location> Locations { get; set; }
-        public DbSet<WeatherSnapshot> WeatherSnapshots { get; set; }
+    }
+
+    public DbSet<User> Users => Set<User>();
+    public DbSet<UserPreference> UserPreferences => Set<UserPreference>();
+    public DbSet<Location> Locations => Set<Location>();
+    public DbSet<WeatherSnapshot> WeatherSnapshots => Set<WeatherSnapshot>();
+    public DbSet<FavoriteLocation> FavoriteLocations => Set<FavoriteLocation>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(AppDbContext).Assembly);
+
+        base.OnModelCreating(modelBuilder);
     }
 }
