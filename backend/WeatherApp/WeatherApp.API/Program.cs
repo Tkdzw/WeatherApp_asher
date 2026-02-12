@@ -18,6 +18,17 @@ builder.Services.AddScoped<IWeatherApiClient, OpenWeatherApiClient>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
 
+
+//MySql Configuration
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(
+            builder.Configuration.GetConnectionString("DefaultConnection")
+        )
+    ));
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
