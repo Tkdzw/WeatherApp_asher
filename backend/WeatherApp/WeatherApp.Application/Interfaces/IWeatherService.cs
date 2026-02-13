@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace WeatherApp.Application.Interfaces
 {
-   public interface IWeatherService
-{
-    Task<WeatherDto> GetCurrentWeatherAsync(int locationId);
+    public interface IWeatherService
+    {
+        Task<WeatherDto> GetCurrentWeatherAsync(int locationId);
 
-    Task<IEnumerable<ForecastDto>> GetForecastAsync(int locationId);
+        Task<ForecastDto> GetForecastAsync(int locationId);
 
-    Task SyncWeatherAsync(int locationId);
+        Task SyncWeatherAsync(int locationId);
 
-    Task SyncAllAsync(); // For background job
-}
+        Task SyncAllAsync(); // For background job
+    }
 }

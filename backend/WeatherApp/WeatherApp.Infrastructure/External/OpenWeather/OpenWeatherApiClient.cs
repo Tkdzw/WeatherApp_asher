@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
+using System.Text.Json;
 using WeatherApp.Application.Interfaces;
 using WeatherApp.Application.Models;
 using WeatherApp.Infrastructure.External.OpenWeather.Models;
+using WeatherForecast.DTOs;
 using static System.Net.WebRequestMethods;
 
 namespace WeatherApp.Infrastructure.External.OpenWeather;
@@ -27,10 +29,7 @@ public class OpenWeatherApiClient : IWeatherApiClient
         var apiKey = _configuration["OpenWeather:ApiKey"];
         var baseUrl = _configuration["OpenWeather:BaseUrl"];
 
-        //var requestUrl = $"{baseUrl}/weather?q={city}&appid={apiKey}&units={units}";
-        const string lat = "20.1457° S";
-        const string lon = "28.5873° E";
-        const string part = "hourly";
+      
 
         var requestUrl = $"{baseUrl}/weather?q={city}&appid={apiKey}&units={units}";
 
@@ -65,10 +64,29 @@ public class OpenWeatherApiClient : IWeatherApiClient
         };
     }
 
-    
+    public async Task<WeatherForecastResponseDto> GetForecastAsync(string city, string units)
+    {
+        var apiKey = _configuration["OpenWeather:ApiKey"];
+        var baseUrl = _configuration["OpenWeather:BaseUrl"];
 
-    //public Task<ExternalForecastResponseDto> GetForecastAsync(string city, string units)
-    //{
-    //    throw new NotImplementedException();
-    //}
+        var requestUrl = $"{baseUrl}/forecast?q={city}&units={units}&appid={apiKey}";
+
+        var response = await _httpClient.GetAsync(requestUrl);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException(
+                $"OpenWeather API returned {response.StatusCode}: {errorContent}");
+        }
+
+        var forecastData = await response.Content
+            .ReadFromJsonAsync<WeatherForecastResponseDto>();
+
+        return forecastData ?? throw new ApplicationException("Failed to deserialize response");
+    }
+
+
+
+
 }

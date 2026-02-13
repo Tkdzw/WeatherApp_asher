@@ -1,4 +1,5 @@
 ﻿using WeatherApp.Application.Models;
+using WeatherForecast.DTOs;
 
 namespace WeatherApp.Application.Interfaces
 {
@@ -8,9 +9,7 @@ namespace WeatherApp.Application.Interfaces
             string city,
             string units);
 
-        //Task<ExternalForecastResponseDto> GetForecastAsync(
-        //    string city,
-        //    string units);
+        Task<WeatherForecastResponseDto> GetForecastAsync(string city, string units);
     }
 
 }
