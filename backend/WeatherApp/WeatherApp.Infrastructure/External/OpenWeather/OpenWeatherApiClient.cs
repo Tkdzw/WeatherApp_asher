@@ -21,15 +21,14 @@ public class OpenWeatherApiClient : IWeatherApiClient
 
     public async Task<ExternalWeatherResponse> GetCurrentWeatherAsync(
         string city,
-        string units,
-        CancellationToken cancellationToken = default)
+        string units)
     {
         var apiKey = _configuration["OpenWeather:ApiKey"];
         var baseUrl = _configuration["OpenWeather:BaseUrl"];
 
         var requestUrl = $"{baseUrl}/weather?q={city}&appid={apiKey}&units={units}";
 
-        var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
+        var response = await _httpClient.GetAsync(requestUrl);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -38,7 +37,7 @@ public class OpenWeatherApiClient : IWeatherApiClient
         }
 
         var raw = await response.Content
-            .ReadFromJsonAsync<OpenWeatherRawResponse>(cancellationToken: cancellationToken);
+            .ReadFromJsonAsync<OpenWeatherRawResponse>();
 
         if (raw == null)
             throw new ApplicationException("Failed to deserialize weather response.");
@@ -60,10 +59,7 @@ public class OpenWeatherApiClient : IWeatherApiClient
         };
     }
 
-    public Task<ExternalWeatherResponse> GetCurrentWeatherAsync(string city, string units)
-    {
-        throw new NotImplementedException();
-    }
+    
 
     //public Task<ExternalForecastResponseDto> GetForecastAsync(string city, string units)
     //{

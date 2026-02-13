@@ -4,7 +4,7 @@ using WeatherApp.Application.Interfaces;
 
 [ApiController]
 [Authorize]
-[Route("api/[controller]")]
+[Route("api/weather/[controller]")]
 public class LocationsController : ControllerBase
 {
     private readonly ILocationService _locationService;

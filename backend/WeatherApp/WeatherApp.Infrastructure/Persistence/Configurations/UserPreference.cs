@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WeatherApp.Domain.Entities;
 
-public class UserPreferenceConfiguration 
+public class UserPreferenceConfiguration
     : IEntityTypeConfiguration<UserPreference>
 {
     public void Configure(EntityTypeBuilder<UserPreference> builder)
@@ -13,7 +13,15 @@ public class UserPreferenceConfiguration
             .IsRequired()
             .HasMaxLength(20);
 
-        builder.Property(x => x.RefreshIntervalMinutes)
-            .IsRequired();
+     
+
+        // 🔗 1-1 Relationship
+        builder.HasOne(x => x.User)
+            .WithOne(u => u.Preference)
+            .HasForeignKey<UserPreference>(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(x => x.UserId)
+            .IsUnique(); // ensures 1-1
     }
 }

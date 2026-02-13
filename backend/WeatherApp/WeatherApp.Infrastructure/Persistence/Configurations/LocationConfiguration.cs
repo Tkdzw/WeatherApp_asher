@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WeatherApp.Domain.Entities;
 
-public class LocationConfiguration 
+public class LocationConfiguration
     : IEntityTypeConfiguration<Location>
 {
     public void Configure(EntityTypeBuilder<Location> builder)
@@ -28,5 +28,11 @@ public class LocationConfiguration
 
         builder.HasIndex(x => new { x.City, x.Country })
             .IsUnique();
+
+        // 🔗 User Relationship (1 User → Many Locations)
+        builder.HasOne(x => x.User)
+            .WithMany(u => u.Locations)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

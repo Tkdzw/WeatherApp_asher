@@ -14,9 +14,15 @@ public class Location
 
     public DateTime LastSynced { get; set; }
 
+
+    // Foreign key
+    public int UserId { get; set; }
+
     // Navigation
 
-    public int UserId { get; set; }
+    //Navigation property
+    public User User { get; set; } = null!;
+
     public ICollection<WeatherSnapshot> WeatherSnapshots { get; set; }
         = new List<WeatherSnapshot>();
 

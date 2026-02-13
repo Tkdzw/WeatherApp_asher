@@ -31,6 +31,8 @@ public class LocationService : ILocationService
 
     public async Task<LocationDto> CreateAsync(CreateLocationRequest request)
     {
+
+
         var location = new Location
         {
             City = request.City,
