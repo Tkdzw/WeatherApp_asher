@@ -37,27 +37,37 @@ public class WeatherService : IWeatherService
 
     public async Task SyncWeatherAsync(int locationId)
     {
-        var location = await _context.Locations.FindAsync(locationId);
-        if (location == null)
-            throw new Exception("Location not found");
+        var location = await _context.Locations
+            .FirstOrDefaultAsync(x => x.Id == locationId);
 
-        var response = await _weatherApiClient
-            .GetCurrentWeatherAsync(location.City, "metric");
+        if (location == null)
+            throw new Exception("Location not found.");
+
+        var preference = await _context.UserPreferences
+            .FirstOrDefaultAsync(x => x.UserId == location.UserId);
+
+        var units = preference?.Units ?? "metric";
+
+        var weather = await _weatherApiClient
+            .GetCurrentWeatherAsync(location.City, units);
 
         var snapshot = new WeatherSnapshot
         {
-            LocationId = locationId,
-            Temperature = response.Temperature,
-            Description = response.Description,
-            Timestamp = DateTime.UtcNow
+            LocationId = location.Id,
+            Temperature = weather.Temperature,
+            FeelsLike = weather.FeelsLike,
+            Humidity = weather.Humidity,
+            Description = weather.Description,
+            WindSpeed = weather.WindSpeed,
+            RetrievedAt = DateTime.UtcNow
         };
 
         _context.WeatherSnapshots.Add(snapshot);
-
         location.LastSynced = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
     }
+
 
     public async Task<IEnumerable<ForecastDto>> GetForecastAsync(int locationId)
     {

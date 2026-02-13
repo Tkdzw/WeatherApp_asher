@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WeatherApp.Application.DTOs.Weather;
+using WeatherApp.Application.Models;
 
 namespace WeatherApp.Application.Interfaces
 {
     public interface IWeatherApiClient
     {
-        Task<ExternalWeatherResponseDto> GetCurrentWeatherAsync(
+        Task<ExternalWeatherResponse> GetCurrentWeatherAsync(
             string city,
             string units);
 
