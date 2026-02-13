@@ -57,6 +57,7 @@ public class WeatherService : IWeatherService
             Temperature = weather.Temperature,
             FeelsLike = weather.FeelsLike,
             Humidity = weather.Humidity,
+            Icon = weather.City,
             Description = weather.Description,
             WindSpeed = weather.WindSpeed,
             Timestamp = DateTime.UtcNow

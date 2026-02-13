@@ -1,8 +1,9 @@
-﻿using System.Net.Http.Json;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using System.Net.Http.Json;
 using WeatherApp.Application.Interfaces;
 using WeatherApp.Application.Models;
 using WeatherApp.Infrastructure.External.OpenWeather.Models;
+using static System.Net.WebRequestMethods;
 
 namespace WeatherApp.Infrastructure.External.OpenWeather;
 
@@ -25,6 +26,11 @@ public class OpenWeatherApiClient : IWeatherApiClient
     {
         var apiKey = _configuration["OpenWeather:ApiKey"];
         var baseUrl = _configuration["OpenWeather:BaseUrl"];
+
+        //var requestUrl = $"{baseUrl}/weather?q={city}&appid={apiKey}&units={units}";
+        const string lat = "20.1457° S";
+        const string lon = "28.5873° E";
+        const string part = "hourly";
 
         var requestUrl = $"{baseUrl}/weather?q={city}&appid={apiKey}&units={units}";
 
