@@ -112,6 +112,8 @@ public class WeatherService : IWeatherService
 
 
     // MAPPING METHOD
+    //Limited to one per day for assessment
+
     public ForecastDto MapToForecastDto(WeatherForecastResponseDto forecastData)
     {
         return new ForecastDto
