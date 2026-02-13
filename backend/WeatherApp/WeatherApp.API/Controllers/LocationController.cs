@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WeatherApp.Application.Interfaces;
 
 [ApiController]
@@ -34,7 +35,10 @@ public class LocationsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateLocationRequest request)
     {
-        var location = await _locationService.CreateAsync(request);
+        var userId = int.Parse(
+            User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var location = await _locationService.CreateAsync(request, userId);
         return CreatedAtAction(nameof(Get), new { id = location.Id }, location);
     }
 

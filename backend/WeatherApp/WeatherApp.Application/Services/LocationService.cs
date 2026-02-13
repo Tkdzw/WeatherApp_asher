@@ -29,15 +29,22 @@ public class LocationService : ILocationService
     }
 
 
-    public async Task<LocationDto> CreateAsync(CreateLocationRequest request)
+    public async Task<LocationDto> CreateAsync(CreateLocationRequest request, int userId)
     {
 
+
+        var userExists = await _context.Users
+           .AnyAsync(u => u.Id == userId);
+
+        if (!userExists)
+            throw new Exception("User does not exist.");
 
         var location = new Location
         {
             City = request.City,
             Country = request.Country,
-            LastSynced = DateTime.UtcNow
+            LastSynced = DateTime.UtcNow,
+            UserId = userId
         };
 
         _context.Locations.Add(location);

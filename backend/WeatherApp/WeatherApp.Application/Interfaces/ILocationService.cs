@@ -12,7 +12,7 @@ namespace WeatherApp.Application.Interfaces
 
     Task<LocationDto?> GetByIdAsync(int id);
 
-    Task<LocationDto> CreateAsync(CreateLocationRequest request);
+    Task<LocationDto> CreateAsync(CreateLocationRequest request, int userId);
 
     Task UpdateAsync(int id, UpdateLocationRequest request);
 
