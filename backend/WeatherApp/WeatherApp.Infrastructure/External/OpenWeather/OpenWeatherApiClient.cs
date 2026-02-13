@@ -59,4 +59,14 @@ public class OpenWeatherApiClient : IWeatherApiClient
             WindSpeed = raw.Wind.Speed
         };
     }
+
+    public Task<ExternalWeatherResponse> GetCurrentWeatherAsync(string city, string units)
+    {
+        throw new NotImplementedException();
+    }
+
+    //public Task<ExternalForecastResponseDto> GetForecastAsync(string city, string units)
+    //{
+    //    throw new NotImplementedException();
+    //}
 }

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WeatherApp.Application.Interfaces;
-using WeatherApp.Application.Services;
+using WeatherApp.Infrastructure.External.OpenWeather;
 using WeatherApp.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);

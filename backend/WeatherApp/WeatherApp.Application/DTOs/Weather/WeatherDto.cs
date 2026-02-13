@@ -1,7 +1,7 @@
 public class WeatherDto
 {
-    public decimal Temperature { get; set; }
-    public decimal FeelsLike { get; set; }
+    public double Temperature { get; set; }
+    public double FeelsLike { get; set; }
 
     public string Description { get; set; }
     public string Icon { get; set; }

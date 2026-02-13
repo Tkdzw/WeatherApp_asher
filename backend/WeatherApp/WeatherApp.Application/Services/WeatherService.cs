@@ -59,7 +59,7 @@ public class WeatherService : IWeatherService
             Humidity = weather.Humidity,
             Description = weather.Description,
             WindSpeed = weather.WindSpeed,
-            RetrievedAt = DateTime.UtcNow
+            Timestamp = DateTime.UtcNow
         };
 
         _context.WeatherSnapshots.Add(snapshot);

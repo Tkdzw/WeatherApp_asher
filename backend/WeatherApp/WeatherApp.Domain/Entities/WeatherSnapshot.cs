@@ -4,9 +4,9 @@ public class WeatherSnapshot
 {
     public int Id { get; set; }
 
-    public decimal Temperature { get; set; }
+    public double Temperature { get; set; }
 
-    public decimal FeelsLike { get; set; }
+    public double FeelsLike { get; set; }
 
     public string Description { get; set; } = null!;
 
@@ -14,7 +14,7 @@ public class WeatherSnapshot
 
     public int Humidity { get; set; }
 
-    public decimal WindSpeed { get; set; }
+    public double WindSpeed { get; set; }
 
     public DateTime Timestamp { get; set; }
 
