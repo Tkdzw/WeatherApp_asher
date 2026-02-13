@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 using WeatherApp.Application.Interfaces;
 
+[EnableRateLimiting("FixedPolicy")]
 [ApiController]
 [Authorize]
 [Route("api/weather/[controller]")]

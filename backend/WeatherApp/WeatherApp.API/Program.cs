@@ -5,6 +5,8 @@ using WeatherApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Threading.RateLimiting;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,32 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             builder.Configuration.GetConnectionString("DefaultConnection")
         )
     ));
+
+builder.Services.AddRateLimiter(options =>
+{
+    // Global default policy
+    options.AddPolicy("FixedPolicy", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.User.Identity?.Name ?? context.Connection.RemoteIpAddress?.ToString(),
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,              // 5 requests
+                Window = TimeSpan.FromMinutes(1), // per 1 minute
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 2
+            }));
+
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json";
+
+        await context.HttpContext.Response.WriteAsync(
+            "{\"error\": \"Too many requests. Please try again later.\"}", token);
+    };
+});
+
 
 // External API
 builder.Services.AddHttpClient<IWeatherApiClient, OpenWeatherApiClient>();
@@ -83,7 +111,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-//app.UseAuthorization();
+app.UseRateLimiter();
 
 app.MapControllers();
 
