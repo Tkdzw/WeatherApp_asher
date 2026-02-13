@@ -21,6 +21,7 @@ public class WeatherService : IWeatherService
         _weatherApiClient = weatherApiClient;
     }
 
+    //Pass location get current weather for the location
     public async Task<WeatherDto> GetCurrentWeatherAsync(int locationId)
     {
         var snapshot = await _context.WeatherSnapshots
@@ -39,6 +40,7 @@ public class WeatherService : IWeatherService
         };
     }
 
+    //Update Weathersnapshots in the database.
     public async Task SyncWeatherAsync(int locationId)
     {
         var location = await _context.Locations
@@ -75,6 +77,8 @@ public class WeatherService : IWeatherService
 
 
 
+    // Get Weatherforecast one for each day.
+    //Adjusted to show one for each (to revert and manage the response)
 
     public async Task<ForecastDto> GetForecastAsync(int locationId)
     {
@@ -96,10 +100,6 @@ public class WeatherService : IWeatherService
         ForecastDto dto = MapToForecastDto(forecastResponse ?? throw new ApplicationException("Failed to deserialize response"));
         return dto;
     }
-
-
-
-
     public async Task SyncAllAsync()
     {
         var locations = await _context.Locations.ToListAsync();
