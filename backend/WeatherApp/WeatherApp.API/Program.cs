@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WeatherApp.Application.Interfaces;
+using WeatherApp.Application.Services;
 using WeatherApp.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,8 +21,8 @@ builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<ILocationService, LocationService>();
 builder.Services.AddTransient<IWeatherService, WeatherService>();
 builder.Services.AddTransient<IPreferenceService, PreferenceService>();
-//builder.Services.AddScoped<IWeatherApiClient, OpenWeatherApiClient>();
-//builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddScoped<IWeatherApiClient, OpenWeatherApiClient>();
+builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
 
 
