@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { LocationWithWeather } from '../../models/location-with-weather.model';
 
 @Injectable({ providedIn: 'root' })
 export class LocationService {
@@ -8,7 +9,7 @@ export class LocationService {
   constructor(private http: HttpClient) { }
 
   getAll() {
-    return this.http.get(`${environment.apiUrl}/weather/locations`);
+    return this.http.get<LocationWithWeather[]>(`${environment.apiUrl}/weather/locations`);
   }
 
   create(data: any) {

@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LocationService } from './location.service';
+import { LocationWithWeather } from '../../models/location-with-weather.model';
 
 @Component({
   standalone: true,
@@ -9,29 +10,77 @@ import { LocationService } from './location.service';
   template: `
     <h1>Locations</h1>
 
-    <form (ngSubmit)="addLocation()">
-      <input [(ngModel)]="city" name="city" placeholder="City" required>
-      <input [(ngModel)]="country" name="country" placeholder="Country" required>
+    <!-- Add Location Form -->
+    <form (ngSubmit)="addLocation()" class="form">
+      <input
+        [(ngModel)]="city"
+        name="city"
+        placeholder="City"
+        required />
+
+      <input
+        [(ngModel)]="country"
+        name="country"
+        placeholder="Country"
+        required />
+
       <button type="submit">Add</button>
     </form>
 
-    <div *ngFor="let loc of locations" class="location">
-      <strong>{{ loc.city }}</strong>
-      <button (click)="sync(loc.id)">Sync Weather</button>
+    <div *ngIf="loading()">Loading...</div>
+
+    <!-- Location List -->
+    <div class="grid">
+      <div class="card" *ngFor="let loc of locations()">
+
+        <h3>{{ loc.city }}, {{ loc.country }}</h3>
+
+        <ng-container *ngIf="loc.weather; else noWeather">
+          <p>🌡 {{ loc.weather.temperature }} °C</p>
+          <p>{{ loc.weather.description }}</p>
+          <small>
+            {{ loc.weather.timestamp | date:'short' }}
+          </small>
+        </ng-container>
+
+        <ng-template #noWeather>
+          <p>No weather synced yet.</p>
+        </ng-template>
+
+        <button (click)="sync(loc.id)">
+          Sync Weather
+        </button>
+
+      </div>
     </div>
   `,
-  styles:[`
-    .location {
-      margin-top:1rem;
+  styles: [`
+    .form {
+      margin-bottom: 2rem;
+      display:flex;
+      gap:1rem;
+    }
+    .grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+      gap:1rem;
+    }
+    .card {
       padding:1rem;
-      border:1px solid #ddd;
-      border-radius:8px;
+      border-radius:12px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+      background:white;
+    }
+    button {
+      margin-top:1rem;
     }
   `]
 })
 export class LocationsComponent implements OnInit {
 
-  locations: any[] = [];
+  locations = signal<LocationWithWeather[]>([]);
+  loading = signal(true);
+
   city = '';
   country = '';
 
@@ -43,7 +92,13 @@ export class LocationsComponent implements OnInit {
 
   load() {
     this.locationService.getAll()
-      .subscribe(res => this.locations = res as any[]);
+      .subscribe({
+        next: res => {
+          this.locations.set(res);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false)
+      });
   }
 
   addLocation() {
@@ -59,6 +114,8 @@ export class LocationsComponent implements OnInit {
 
   sync(id: number) {
     this.locationService.syncWeather(id)
-      .subscribe();
+      .subscribe(() => {
+        this.load();
+      });
   }
 }
