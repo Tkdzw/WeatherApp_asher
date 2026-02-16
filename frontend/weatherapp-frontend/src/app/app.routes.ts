@@ -32,6 +32,6 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () =>
       import('./features/auth/register/register')
-        .then(m => m.Register)
+        .then(m => m.RegisterComponent)
   }
 ];
