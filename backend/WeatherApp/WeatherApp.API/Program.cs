@@ -19,8 +19,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(
             builder.Configuration.GetConnectionString("DefaultConnection")
-        )
-    ));
+        ),
+        mysqlOptions =>
+        {
+            mysqlOptions.CommandTimeout(120); // 120 seconds
+        }
+    )
+);
+
 
 builder.Services.AddRateLimiter(options =>
 {
