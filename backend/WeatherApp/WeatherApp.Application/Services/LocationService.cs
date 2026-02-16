@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WeatherApp.Application.DTOs;
+using WeatherApp.Application.DTOs.Locations;
 using WeatherApp.Application.Interfaces;
 using WeatherApp.Domain.Entities;
 using WeatherApp.Infrastructure.Persistence;
@@ -56,6 +57,37 @@ public class LocationService : ILocationService
             City = location.City,
             Country = location.Country
         };
+    }
+
+    public async Task<List<LocationWithWeatherDto>>
+    GetUserLocationsWithWeatherAsync(int userId)
+    {
+        var locations = await _context.Locations
+            .Where(l => l.UserId == userId)
+            .Include(l => l.WeatherSnapshots)
+            .ToListAsync();
+
+        var result = locations.Select(l =>
+        {
+            var latestWeather = l.WeatherSnapshots
+                .OrderByDescending(w => w.Timestamp)
+                .FirstOrDefault();
+
+            return new LocationWithWeatherDto
+            {
+                Id = l.Id,
+                City = l.City,
+                Country = l.Country,
+                Weather = latestWeather == null ? null : new WeatherDto
+                {
+                    Temperature = latestWeather.Temperature,
+                    Description = latestWeather.Description,
+                    Timestamp = latestWeather.Timestamp
+                }
+            };
+        }).ToList();
+
+        return result;
     }
 
     public async Task UpdateAsync(int id, UpdateLocationRequest request)

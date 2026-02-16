@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WeatherApp.Application.DTOs.Locations;
 
 namespace WeatherApp.Application.Interfaces
 {
@@ -16,6 +17,9 @@ namespace WeatherApp.Application.Interfaces
 
     Task UpdateAsync(int id, UpdateLocationRequest request);
 
-    Task DeleteAsync(int id);
+        Task<List<LocationWithWeatherDto>>
+       GetUserLocationsWithWeatherAsync(int userId);
+
+        Task DeleteAsync(int id);
 }
 }

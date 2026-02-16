@@ -34,6 +34,19 @@ public class LocationsController : ControllerBase
         return Ok(location);
     }
 
+
+    [HttpGet("with-weather")]
+    public async Task<IActionResult> GetUserLocations()
+    {
+        var userId = int.Parse(
+            User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        var result = await _locationService
+            .GetUserLocationsWithWeatherAsync(userId);
+
+        return Ok(result);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(CreateLocationRequest request)
     {

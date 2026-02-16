@@ -7,11 +7,11 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <div class="card">
-      <h3>{{ weather.city }}</h3>
-      <p>🌡 {{ weather.temperature }} °C</p>
-      <p>{{ weather.description }}</p>
-      <small>{{ weather.recordedAt | date:'short' }}</small>
-    </div>
+    <h3>{{ weather.city }}</h3>
+    <p>🌡 {{ weather.temperature }} °C</p>
+    <p>{{ weather.description }}</p>
+    <small>{{ weather.recordedAt | date:'short' }}</small>
+  </div>
   `,
   styles: [`
     .card {

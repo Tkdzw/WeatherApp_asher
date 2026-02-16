@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { WeatherService } from '../weather/weather.service';
 import { CommonModule } from '@angular/common';
 import { WeatherCardComponent } from '../../components/weather-card.component';
+import { LocationService } from '../locations/location.service';
 
 @Component({
   standalone: true,
@@ -32,9 +33,23 @@ export class DashboardComponent implements OnInit {
 
   weatherList: any[] = [];
 
-  constructor(private weatherService: WeatherService) {}
+  constructor(private locationService: LocationService) {}
 
-  ngOnInit() {
-    // Later fetch all user weather
+ ngOnInit() {
+  this.loadWeather();
+  setInterval(() => this.loadWeather(), 60000);
+}
+
+
+loadWeather() {
+    this.locationService.getWithWeather()
+      .subscribe({
+        next: (res) => {
+          this.weatherList = res;
+        },
+        error: () => {
+        }
+      });
   }
+
 }

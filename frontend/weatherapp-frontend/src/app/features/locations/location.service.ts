@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class LocationService {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll() {
     return this.http.get(`${environment.apiUrl}/weather/locations`);
@@ -14,6 +14,13 @@ export class LocationService {
   create(data: any) {
     return this.http.post(`${environment.apiUrl}/weather/locations`, data);
   }
+
+  getWithWeather() {
+    return this.http.get<any[]>(
+      `${environment.apiUrl}/weather/locations/with-weather`
+    );
+  }
+
 
   syncWeather(id: number) {
     return this.http.post(
