@@ -1,21 +1,23 @@
 using Microsoft.EntityFrameworkCore;
 using BCrypt.Net;
 using WeatherApp.Application.DTOs;
+using WeatherApp.Infrastructure.Persistence;
+using WeatherApp.Application.Interfaces;
 using WeatherApp.Application.DTOs.Auth;
 using WeatherApp.Application.DTOs.Users;
-using WeatherApp.Application.Interfaces;
-using WeatherApp.Domain.Entities;
-using WeatherApp.Infrastructure.Persistence;
+using AutoMapper;
 
 public class UserService : IUserService
 {
     private readonly AppDbContext _context;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
+    private readonly IMapper _mapper;
 
-    public UserService(AppDbContext context, IJwtTokenGenerator jwtTokenGenerator)
+    public UserService(AppDbContext context, IJwtTokenGenerator jwtTokenGenerator, IMapper mapper)
     {
         _context = context;
         _jwtTokenGenerator = jwtTokenGenerator;
+        _mapper = mapper;
     }
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
@@ -23,17 +25,21 @@ public class UserService : IUserService
         if (await _context.Users.AnyAsync(x => x.Email == request.Email))
             throw new Exception("Email already exists");
 
-        var user = new User
-        {
-            Username = request.Username,
-            Email = request.Email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            Preference = new UserPreference
-            {
-                Units = "metric",
-                RefreshIntervalMinutes = 30
-            }
-        };
+        //var user = new User
+        //{
+        //    Username = request.Username,
+        //    Email = request.Email,
+        //    PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+        //    Preference = new UserPreferenceDto
+        //    {
+        //        Units = "metric",
+        //        RefreshIntervalMinutes = 30
+        //    }
+        //};
+
+        request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+        var user = _mapper.Map<User>(request);
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
@@ -69,39 +75,39 @@ public class UserService : IUserService
         };
     }
 
-    public async Task<IEnumerable<LocationDto>> GetFavoritesAsync(int userId)
-    {
-        return await _context.FavoriteLocations
-            .Where(f => f.UserId == userId)
-            .Select(f => new LocationDto
-            {
-                Id = f.Location.Id,
-                City = f.Location.City,
-                Country = f.Location.Country,
-                Latitude = f.Location.Latitude,
-                Longitude = f.Location.Longitude,
-                LastSynced = f.Location.LastSynced
-            })
-            .ToListAsync();
-    }
+    //public async Task<IEnumerable<LocationDto>> GetFavoritesAsync(int userId)
+    //{
+    //    return await _context.FavoriteLocations
+    //        .Where(f => f.UserId == userId)
+    //        .Select(f => new LocationDto
+    //        {
+    //            Id = f.Location.Id,
+    //            City = f.Location.City,
+    //            Country = f.Location.Country,
+    //            Latitude = f.Location.Latitude,
+    //            Longitude = f.Location.Longitude,
+    //            LastSynced = f.Location.LastSynced
+    //        })
+    //        .ToListAsync();
+    //}
 
-    public async Task AddFavoriteAsync(int userId, int locationId)
-    {
-        var exists = await _context.FavoriteLocations
-            .AnyAsync(x => x.UserId == userId && x.LocationId == locationId);
+    //public async Task AddFavoriteAsync(int userId, int locationId)
+    //{
+    //    var exists = await _context.FavoriteLocations
+    //        .AnyAsync(x => x.UserId == userId && x.LocationId == locationId);
 
-        if (!exists)
-        {
-            _context.FavoriteLocations.Add(new FavoriteLocation
-            {
-                UserId = userId,
-                LocationId = locationId,
-                AddedAt = DateTime.UtcNow
-            });
+    //    if (!exists)
+    //    {
+    //        _context.FavoriteLocations.Add(new FavoriteLocation
+    //        {
+    //            UserId = userId,
+    //            LocationId = locationId,
+    //            AddedAt = DateTime.UtcNow
+    //        });
 
-            await _context.SaveChangesAsync();
-        }
-    }
+    //        await _context.SaveChangesAsync();
+    //    }
+    //}
 
 
     public async Task<UserDto?> GetByIdAsync(int userId)

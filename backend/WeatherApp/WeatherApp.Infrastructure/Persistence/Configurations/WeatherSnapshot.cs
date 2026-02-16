@@ -7,30 +7,32 @@ public class WeatherSnapshotConfiguration
 {
     public void Configure(EntityTypeBuilder<WeatherSnapshot> builder)
     {
+        builder.ToTable("WeatherSnapshots");
+
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Temperature);
+        builder.Property(x => x.Temperature)
+            .IsRequired();
 
         builder.Property(x => x.FeelsLike)
-            ;
+            .IsRequired();
 
         builder.Property(x => x.Description)
-            .IsRequired()
-            .HasMaxLength(200);
+            .HasMaxLength(250);
 
         builder.Property(x => x.Icon)
             .HasMaxLength(50);
 
-        builder.Property(x => x.WindSpeed);
+        builder.Property(x => x.Humidity)
+            .IsRequired();
+
+        builder.Property(x => x.WindSpeed)
+            .IsRequired();
 
         builder.Property(x => x.Timestamp)
             .IsRequired();
 
-        builder.HasOne(x => x.Location)
-            .WithMany(x => x.WeatherSnapshots)
-            .HasForeignKey(x => x.LocationId)
-            .OnDelete(DeleteBehavior.Cascade);
-
+        builder.HasIndex(x => x.LocationId);
         builder.HasIndex(x => x.Timestamp);
     }
 }

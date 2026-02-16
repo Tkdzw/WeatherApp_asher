@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WeatherApp.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class RefinedSolution : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -60,14 +60,14 @@ namespace WeatherApp.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Temperature = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    FeelsLike = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    Description = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
+                    Temperature = table.Column<double>(type: "double", nullable: false),
+                    FeelsLike = table.Column<double>(type: "double", nullable: false),
+                    Description = table.Column<string>(type: "varchar(250)", maxLength: 250, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Icon = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Humidity = table.Column<int>(type: "int", nullable: false),
-                    WindSpeed = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    WindSpeed = table.Column<double>(type: "double", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     LocationId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -84,24 +84,27 @@ namespace WeatherApp.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "FavoriteLocations",
+                name: "UserLocations",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     LocationId = table.Column<int>(type: "int", nullable: false),
-                    AddedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    IsFavourite = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FavoriteLocations", x => new { x.UserId, x.LocationId });
+                    table.PrimaryKey("PK_UserLocations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FavoriteLocations_Locations_LocationId",
+                        name: "FK_UserLocations_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_FavoriteLocations_Users_UserId",
+                        name: "FK_UserLocations_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -133,14 +136,20 @@ namespace WeatherApp.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FavoriteLocations_LocationId",
-                table: "FavoriteLocations",
-                column: "LocationId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Locations_City_Country",
                 table: "Locations",
-                columns: new[] { "City", "Country" },
+                columns: new[] { "City", "Country" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserLocations_LocationId",
+                table: "UserLocations",
+                column: "LocationId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserLocations_UserId_LocationId",
+                table: "UserLocations",
+                columns: new[] { "UserId", "LocationId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -170,7 +179,7 @@ namespace WeatherApp.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "FavoriteLocations");
+                name: "UserLocations");
 
             migrationBuilder.DropTable(
                 name: "UserPreferences");

@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using WeatherApp.Domain.Entities;
 
 public class LocationConfiguration
     : IEntityTypeConfiguration<Location>
 {
     public void Configure(EntityTypeBuilder<Location> builder)
     {
+        builder.ToTable("Locations");
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.City)
@@ -26,13 +27,12 @@ public class LocationConfiguration
         builder.Property(x => x.LastSynced)
             .IsRequired();
 
-        builder.HasIndex(x => new { x.City, x.Country })
-            .IsUnique();
+        builder.HasIndex(x => new { x.City, x.Country });
 
-        // 🔗 User Relationship (1 User → Many Locations)
-        builder.HasOne(x => x.User)
-            .WithMany(u => u.Locations)
-            .HasForeignKey(x => x.UserId)
+        // 1 Location → Many WeatherSnapshots
+        builder.HasMany(x => x.WeatherSnapshots)
+            .WithOne(x => x.Location)
+            .HasForeignKey(x => x.LocationId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

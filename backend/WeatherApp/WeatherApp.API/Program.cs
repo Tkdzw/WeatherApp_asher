@@ -1,19 +1,16 @@
-using Microsoft.EntityFrameworkCore;
-using WeatherApp.Application.Interfaces;
-using WeatherApp.Infrastructure.External.OpenWeather;
-using WeatherApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Threading.RateLimiting;
-
-
+using WeatherApp.Application.Interfaces;
+using WeatherApp.Infrastructure.External.OpenWeather;
+using WeatherApp.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-//MySql Configuration
+// ---------------- DATABASE ----------------
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -22,22 +19,37 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         ),
         mysqlOptions =>
         {
-            mysqlOptions.CommandTimeout(120); // 120 seconds
+            mysqlOptions.CommandTimeout(120);
         }
     )
 );
 
+// ---------------- AUTOMAPPER ----------------
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+// ---------------- CORS ----------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+// ---------------- RATE LIMITING ----------------
 builder.Services.AddRateLimiter(options =>
 {
-    // Global default policy
     options.AddPolicy("FixedPolicy", context =>
         RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey: context.User.Identity?.Name ?? context.Connection.RemoteIpAddress?.ToString(),
+            partitionKey:
+                context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                ?? context.Connection.RemoteIpAddress?.ToString(),
             factory: _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = 5,              // 5 requests
-                Window = TimeSpan.FromMinutes(1), // per 1 minute
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1),
                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                 QueueLimit = 2
             }));
@@ -47,33 +59,22 @@ builder.Services.AddRateLimiter(options =>
     options.OnRejected = async (context, token) =>
     {
         context.HttpContext.Response.ContentType = "application/json";
-
         await context.HttpContext.Response.WriteAsync(
             "{\"error\": \"Too many requests. Please try again later.\"}", token);
     };
 });
 
-
-// External API
+// ---------------- HTTP CLIENT ----------------
 builder.Services.AddHttpClient<IWeatherApiClient, OpenWeatherApiClient>();
 
-
-builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<ILocationService, LocationService>();
-builder.Services.AddTransient<IWeatherService, WeatherService>();
-builder.Services.AddTransient<IPreferenceService, PreferenceService>();
-//builder.Services.AddScoped<IWeatherApiClient, OpenWeatherApiClient>();
+// ---------------- SERVICES ----------------
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IWeatherService, WeatherService>();
+builder.Services.AddScoped<IPreferenceService, PreferenceService>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
-
-
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-
+// ---------------- AUTH ----------------
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -98,14 +99,14 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-
+// ---------------- CONTROLLERS ----------------
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-
-
-
-// Configure the HTTP request pipeline.
+// ---------------- PIPELINE ----------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -113,19 +114,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseCors(x => x
-    .SetIsOriginAllowed(origin => true)
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials());
-
 app.UseCors("AllowAll");
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.UseRateLimiter();

@@ -12,8 +12,8 @@ using WeatherApp.Infrastructure.Persistence;
 namespace WeatherApp.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260213001949_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260216170226_RefinedSolution")]
+    partial class RefinedSolution
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,25 +25,7 @@ namespace WeatherApp.Infrastructure.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("WeatherApp.Domain.Entities.FavoriteLocation", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("AddedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("UserId", "LocationId");
-
-                    b.HasIndex("LocationId");
-
-                    b.ToTable("FavoriteLocations");
-                });
-
-            modelBuilder.Entity("WeatherApp.Domain.Entities.Location", b =>
+            modelBuilder.Entity("Location", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -72,13 +54,12 @@ namespace WeatherApp.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("City", "Country")
-                        .IsUnique();
+                    b.HasIndex("City", "Country");
 
-                    b.ToTable("Locations");
+                    b.ToTable("Locations", (string)null);
                 });
 
-            modelBuilder.Entity("WeatherApp.Domain.Entities.User", b =>
+            modelBuilder.Entity("User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -105,7 +86,38 @@ namespace WeatherApp.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("UserLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsFavourite")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "LocationId")
+                        .IsUnique();
+
+                    b.ToTable("UserLocations", (string)null);
                 });
 
             modelBuilder.Entity("WeatherApp.Domain.Entities.UserPreference", b =>
@@ -132,7 +144,7 @@ namespace WeatherApp.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("UserPreferences");
+                    b.ToTable("UserPreferences", (string)null);
                 });
 
             modelBuilder.Entity("WeatherApp.Domain.Entities.WeatherSnapshot", b =>
@@ -145,11 +157,11 @@ namespace WeatherApp.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)");
 
-                    b.Property<decimal>("FeelsLike")
-                        .HasColumnType("decimal(65,30)");
+                    b.Property<double>("FeelsLike")
+                        .HasColumnType("double");
 
                     b.Property<int>("Humidity")
                         .HasColumnType("int");
@@ -162,14 +174,14 @@ namespace WeatherApp.Infrastructure.Migrations
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Temperature")
-                        .HasColumnType("decimal(65,30)");
+                    b.Property<double>("Temperature")
+                        .HasColumnType("double");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<decimal>("WindSpeed")
-                        .HasColumnType("decimal(65,30)");
+                    b.Property<double>("WindSpeed")
+                        .HasColumnType("double");
 
                     b.HasKey("Id");
 
@@ -177,19 +189,19 @@ namespace WeatherApp.Infrastructure.Migrations
 
                     b.HasIndex("Timestamp");
 
-                    b.ToTable("WeatherSnapshots");
+                    b.ToTable("WeatherSnapshots", (string)null);
                 });
 
-            modelBuilder.Entity("WeatherApp.Domain.Entities.FavoriteLocation", b =>
+            modelBuilder.Entity("UserLocation", b =>
                 {
-                    b.HasOne("WeatherApp.Domain.Entities.Location", "Location")
-                        .WithMany("FavoritedByUsers")
-                        .HasForeignKey("LocationId")
+                    b.HasOne("Location", "Location")
+                        .WithOne("UserLocation")
+                        .HasForeignKey("UserLocation", "LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WeatherApp.Domain.Entities.User", "User")
-                        .WithMany("FavoriteLocations")
+                    b.HasOne("User", "User")
+                        .WithMany("UserLocations")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -201,7 +213,7 @@ namespace WeatherApp.Infrastructure.Migrations
 
             modelBuilder.Entity("WeatherApp.Domain.Entities.UserPreference", b =>
                 {
-                    b.HasOne("WeatherApp.Domain.Entities.User", "User")
+                    b.HasOne("User", "User")
                         .WithOne("Preference")
                         .HasForeignKey("WeatherApp.Domain.Entities.UserPreference", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -212,7 +224,7 @@ namespace WeatherApp.Infrastructure.Migrations
 
             modelBuilder.Entity("WeatherApp.Domain.Entities.WeatherSnapshot", b =>
                 {
-                    b.HasOne("WeatherApp.Domain.Entities.Location", "Location")
+                    b.HasOne("Location", "Location")
                         .WithMany("WeatherSnapshots")
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -221,18 +233,20 @@ namespace WeatherApp.Infrastructure.Migrations
                     b.Navigation("Location");
                 });
 
-            modelBuilder.Entity("WeatherApp.Domain.Entities.Location", b =>
+            modelBuilder.Entity("Location", b =>
                 {
-                    b.Navigation("FavoritedByUsers");
+                    b.Navigation("UserLocation")
+                        .IsRequired();
 
                     b.Navigation("WeatherSnapshots");
                 });
 
-            modelBuilder.Entity("WeatherApp.Domain.Entities.User", b =>
+            modelBuilder.Entity("User", b =>
                 {
-                    b.Navigation("FavoriteLocations");
+                    b.Navigation("Preference")
+                        .IsRequired();
 
-                    b.Navigation("Preference");
+                    b.Navigation("UserLocations");
                 });
 #pragma warning restore 612, 618
         }

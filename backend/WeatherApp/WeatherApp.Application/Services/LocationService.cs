@@ -45,7 +45,6 @@ public class LocationService : ILocationService
             City = request.City,
             Country = request.Country,
             LastSynced = DateTime.UtcNow,
-            UserId = userId
         };
 
         _context.Locations.Add(location);
@@ -63,7 +62,6 @@ public class LocationService : ILocationService
     GetUserLocationsWithWeatherAsync(int userId)
     {
         var locations = await _context.Locations
-            .Where(l => l.UserId == userId)
             .Include(l => l.WeatherSnapshots)
             .ToListAsync();
 

@@ -7,21 +7,15 @@ public class UserPreferenceConfiguration
 {
     public void Configure(EntityTypeBuilder<UserPreference> builder)
     {
+        builder.ToTable("UserPreferences");
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Units)
             .IsRequired()
             .HasMaxLength(20);
 
-     
-
-        // 🔗 1-1 Relationship
-        builder.HasOne(x => x.User)
-            .WithOne(u => u.Preference)
-            .HasForeignKey<UserPreference>(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasIndex(x => x.UserId)
-            .IsUnique(); // ensures 1-1
+        builder.Property(x => x.RefreshIntervalMinutes)
+            .IsRequired();
     }
 }

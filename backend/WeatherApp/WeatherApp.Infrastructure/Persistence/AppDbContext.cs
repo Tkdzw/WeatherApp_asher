@@ -12,9 +12,9 @@ public class AppDbContext : DbContext
 
     public DbSet<User> Users => Set<User>();
     public DbSet<UserPreference> UserPreferences => Set<UserPreference>();
+    public DbSet<UserLocation> UserLocations => Set<UserLocation>();
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<WeatherSnapshot> WeatherSnapshots => Set<WeatherSnapshot>();
-    public DbSet<FavoriteLocation> FavoriteLocations => Set<FavoriteLocation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

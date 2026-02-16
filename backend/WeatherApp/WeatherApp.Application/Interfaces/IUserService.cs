@@ -10,8 +10,8 @@ namespace WeatherApp.Application.Interfaces
 
     Task<UserDto?> GetByIdAsync(int userId);
 
-    Task<IEnumerable<LocationDto>> GetFavoritesAsync(int userId);
-    Task AddFavoriteAsync(int userId, int locationId);
-    Task RemoveFavoriteAsync(int userId, int locationId);
+    //Task<IEnumerable<LocationDto>> GetFavoritesAsync(int userId);
+    //Task AddFavoriteAsync(int userId, int locationId);
+    //Task RemoveFavoriteAsync(int userId, int locationId);
 }
 }

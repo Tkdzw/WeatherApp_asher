@@ -49,10 +49,11 @@ public class WeatherService : IWeatherService
         if (location == null)
             throw new Exception("Location not found.");
 
-        var preference = await _context.UserPreferences
-            .FirstOrDefaultAsync(x => x.UserId == location.UserId);
+        //var preference = await _context.UserPreferences
+        //    .FirstOrDefaultAsync(x => x.UserId == location.UserId);
 
-        var units = preference?.Units ?? "metric";
+        //var units = preference?.Units ?? "metric";
+        var units = "metric";
 
         var weather = await _weatherApiClient
             .GetCurrentWeatherAsync(location.City, units);
@@ -89,10 +90,11 @@ public class WeatherService : IWeatherService
         if (location == null)
             throw new Exception("Location not found.");
 
-        var preference = await _context.UserPreferences
-            .FirstOrDefaultAsync(x => x.UserId == location.UserId);
+        //var preference = await _context.UserPreferences
+        //    .FirstOrDefaultAsync(x => x.UserId == location.UserId);
 
-        var units = preference?.Units ?? "metric";
+        //var units = preference?.Units ?? "metric";
+        var units =  "metric";
 
         var forecastResponse = await _weatherApiClient
             .GetForecastAsync(location.City, units);
