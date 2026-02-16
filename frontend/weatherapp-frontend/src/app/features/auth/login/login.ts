@@ -1,19 +1,13 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   standalone: true,
   imports: [FormsModule],
-  template: `
-    <h2>Login</h2>
-
-    <form (ngSubmit)="login()">
-      <input [(ngModel)]="email" name="email" placeholder="Email" required />
-      <input [(ngModel)]="password" name="password" type="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
-  `
+  templateUrl: './login.html',
+  styleUrl: './login.scss',
 })
 export class LoginComponent {
 

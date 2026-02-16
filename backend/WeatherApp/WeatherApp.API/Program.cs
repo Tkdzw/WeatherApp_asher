@@ -108,6 +108,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors(x => x
+    .SetIsOriginAllowed(origin => true)
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials());
+
+app.UseCors("AllowAll");
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
