@@ -25,7 +25,7 @@ export class LocationService {
 
   syncWeather(id: number) {
     return this.http.post(
-      `${environment.apiUrl}/weather/sync/${id}`,
+      `${environment.apiUrl}/weather/${id}/sync`,
       {}
     );
   }
