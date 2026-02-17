@@ -12,8 +12,8 @@ public class WeatherProfile : Profile
 
         CreateMap<UserLocation, UserLocationsWeatherDto>()
             .ForMember(dest => dest.LocationId, opt=> opt.MapFrom(src => src.Location.Id))
-            .ForMember(dest => dest.WeatherSnapshots, opt=> opt.MapFrom(src => src.Location.WeatherSnapshots))
-            .ForMember(dest => dest.LocationName, opt=> opt.MapFrom(src => src.Location));
+            //.ForMember(dest => dest.WeatherSnapshots, opt => opt.MapFrom(src => src.Location.WeatherSnapshots))
+            .ForMember(dest => dest.LocationName, opt=> opt.MapFrom(src => src.Location.City));
 
         CreateMap<WeatherSnapshot, WeatherSnapshotDto>();
     }

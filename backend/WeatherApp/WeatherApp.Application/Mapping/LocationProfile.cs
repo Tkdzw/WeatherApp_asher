@@ -6,7 +6,7 @@ public class LocationProfile : Profile
     public LocationProfile()
     {
         CreateMap<Location, LocationDto>()
-                        .ForMember(dest => dest.WeatherSnapshots, opt => opt.MapFrom(src => src.WeatherSnapshots))
+                 .ForMember(dest => dest.WeatherSnapshots, opt => opt.MapFrom(src => src.WeatherSnapshots))
 ;
 
         CreateMap<UserLocation, LocationWithWeatherDto>()
