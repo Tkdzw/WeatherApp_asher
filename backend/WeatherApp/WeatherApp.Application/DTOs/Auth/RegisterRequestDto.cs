@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace WeatherApp.Application.DTOs.Auth
 {
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
     using WeatherApp.Application.DTOs.Users;
 
     public class RegisterRequestDto
@@ -23,6 +24,6 @@ namespace WeatherApp.Application.DTOs.Auth
         [MinLength(6)]
         public string Password { get; set; }
 
-        public UserPreferenceDto PreferenceDto { get; set; }
+       
     }
 }
