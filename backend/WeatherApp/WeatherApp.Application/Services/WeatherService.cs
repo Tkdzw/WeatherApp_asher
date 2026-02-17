@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Net.Http;
 using System.Text.Json;
 using WeatherApp.Application.DTOs;
+using WeatherApp.Application.DTOs.Weather;
 using WeatherApp.Application.Interfaces;
 using WeatherApp.Domain.Entities;
 using WeatherApp.Infrastructure.Persistence;
@@ -12,13 +14,30 @@ public class WeatherService : IWeatherService
 {
     private readonly AppDbContext _context;
     private readonly IWeatherApiClient _weatherApiClient;
+    private readonly IMapper _mapper;
 
     public WeatherService(
         AppDbContext context,
+        IMapper mapper,
         IWeatherApiClient weatherApiClient)
     {
         _context = context;
         _weatherApiClient = weatherApiClient;
+        _mapper = mapper;
+    }
+
+
+    public async Task<List<UserLocationsWeatherDto>> GetUserLocationsWeather(int userId)
+    {
+        var userweatherEntity = await _context.UserLocations
+            .Where(l => l.UserId == userId)
+            .Include(l => l.Location)
+            .ThenInclude(s => s.WeatherSnapshots)
+            .ToListAsync();
+
+        var userWeather = _mapper.Map<List<UserLocationsWeatherDto>>(userweatherEntity);
+
+        return userWeather;
     }
 
     //Pass location get current weather for the location
@@ -40,6 +59,9 @@ public class WeatherService : IWeatherService
         };
     }
 
+
+
+    // Background Service
     //Update Weathersnapshots in the database.
     public async Task SyncWeatherAsync(int locationId)
     {
@@ -77,10 +99,9 @@ public class WeatherService : IWeatherService
     }
 
 
-
+    //Background Or On Request
     // Get Weatherforecast one for each day.
     //Adjusted to show one for each (to revert and manage the response)
-
     public async Task<ForecastDto> GetForecastAsync(int locationId)
     {
 
@@ -94,7 +115,7 @@ public class WeatherService : IWeatherService
         //    .FirstOrDefaultAsync(x => x.UserId == location.UserId);
 
         //var units = preference?.Units ?? "metric";
-        var units =  "metric";
+        var units = "metric";
 
         var forecastResponse = await _weatherApiClient
             .GetForecastAsync(location.City, units);
@@ -102,6 +123,9 @@ public class WeatherService : IWeatherService
         ForecastDto dto = MapToForecastDto(forecastResponse ?? throw new ApplicationException("Failed to deserialize response"));
         return dto;
     }
+
+
+    //Background Service
     public async Task SyncAllAsync()
     {
         var locations = await _context.Locations.ToListAsync();
@@ -115,7 +139,6 @@ public class WeatherService : IWeatherService
 
     // MAPPING METHOD
     //Limited to one per day for assessment
-
     public ForecastDto MapToForecastDto(WeatherForecastResponseDto forecastData)
     {
         return new ForecastDto
@@ -126,7 +149,8 @@ public class WeatherService : IWeatherService
             Lon = forecastData.City?.Coord?.Lon ?? 0,
             Daily = forecastData.List?
                 .Where(item => item?.Main != null && !string.IsNullOrEmpty(item.Dt_Txt))
-                .Select(item => {
+                .Select(item =>
+                {
                     DateTime.TryParse(item.Dt_Txt, out var parsedDate);
                     return new
                     {
@@ -138,7 +162,8 @@ public class WeatherService : IWeatherService
                 // Group by date
                 .GroupBy(x => x.Date)
                 // For each date, take the forecast around midday (12:00)
-                .Select(g => {
+                .Select(g =>
+                {
                     // Try to get the 12:00 forecast first
                     var middayForecast = g.FirstOrDefault(x => x.Hour == 12);
                     // If no 12:00 forecast, take the closest to midday

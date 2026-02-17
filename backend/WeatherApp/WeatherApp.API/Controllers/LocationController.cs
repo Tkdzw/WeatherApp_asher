@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
+using WeatherApp.Application.DTOs.Locations;
 using WeatherApp.Application.Interfaces;
 
 [EnableRateLimiting("FixedPolicy")]
@@ -53,8 +54,19 @@ public class LocationsController : ControllerBase
         var userId = int.Parse(
             User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        var location = await _locationService.CreateAsync(request, userId);
+        var location = await _locationService.CreateAsync(request);
         return CreatedAtAction(nameof(Get), new { id = location.Id }, location);
+    }
+
+    [HttpPost("userlocation")]
+    public async Task<IActionResult> CreateUserLocation(UserLocationDto userLocation)
+    {
+        var userId = int.Parse(
+           User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var result = await _locationService.CreateUserLocationAsync(userLocation,userId);
+
+        return Ok(result);
     }
 
     [HttpPut("{id}")]

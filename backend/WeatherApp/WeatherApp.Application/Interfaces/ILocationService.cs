@@ -7,19 +7,20 @@ using WeatherApp.Application.DTOs.Locations;
 
 namespace WeatherApp.Application.Interfaces
 {
-   public interface ILocationService
-{
-    Task<IEnumerable<LocationDto>> GetAllAsync();
+    public interface ILocationService
+    {
+        Task<IEnumerable<LocationDto>> GetAllAsync();
 
-    Task<LocationDto?> GetByIdAsync(int id);
+        Task<LocationDto?> GetByIdAsync(int id);
 
-    Task<LocationDto> CreateAsync(CreateLocationRequest request, int userId);
+        Task<LocationDto> CreateAsync(CreateLocationRequest request);
 
-    Task UpdateAsync(int id, UpdateLocationRequest request);
+        Task<UserLocationResponseDto> CreateUserLocationAsync(UserLocationDto request, int userId);
 
-        Task<List<LocationWithWeatherDto>>
-       GetUserLocationsWithWeatherAsync(int userId);
+        Task UpdateAsync(int id, UpdateLocationRequest request);
+
+        Task<List<LocationWithWeatherDto>> GetUserLocationsWithWeatherAsync(int userId);
 
         Task DeleteAsync(int id);
-}
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Security.Claims;
 using WeatherApp.Application.Interfaces;
 
 [EnableRateLimiting("FixedPolicy")]
@@ -21,6 +22,16 @@ public class WeatherController : ControllerBase
     {
         var weather = await _weatherService.GetCurrentWeatherAsync(locationId);
         return Ok(weather);
+    }
+
+    [HttpGet("user-weather")]
+    public async Task<IActionResult> GetUserLocationsWeather()
+    {
+        var userId = int.Parse(
+            User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        var userWeather = await _weatherService.GetUserLocationsWeather(userId);
+        return Ok(userWeather);
     }
 
     [HttpGet("{locationId}/forecast")]

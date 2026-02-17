@@ -9,7 +9,7 @@ public class Location
     public double Latitude { get; set; }
     public double Longitude { get; set; }
 
-    public DateTime LastSynced { get; set; }
+    public DateTime LastSynced { get; set; } = DateTime.UtcNow;
 
     // 1:1 reverse navigation
     public UserLocation UserLocation { get; set; }
